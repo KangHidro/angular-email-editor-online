@@ -1,0 +1,44 @@
+<div nz-row nzGutter="16">
+  <div nz-col nzSpan="24" class="text-center">
+    <h2>Angular Email Template Editor - Online</h2>
+  </div>
+
+  <div nz-col nzSpan="24" class="text-center">
+    <h3>Load config from JSON (stringified):</h3>
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 5}" [(ngModel)]="inputEmailCfg"
+      placeholder="Config (JSON stringified)"></textarea>
+    <button [disabled]="!inputEmailCfg" nz-button nzType="primary" nzSize="large" type="button"
+      (click)="loadCustomEmailCfg()">Load config</button>
+    <button [disabled]="!inputEmailCfg" nz-button nzType="text" nzSize="large" type="button"
+      (click)="inputEmailCfg=''">Clear</button>
+  </div>
+
+  <div nz-col nzSpan="24" id="block-email-editor" class="text-center" [ngStyle]="blockEmailEditorStyle">
+    <!-- Email template editor -->
+    <email-editor [editorId]="'email-editor'" (loaded)="editorLoaded()" [ngStyle]="emailEditorStyle"></email-editor>
+    <i>Editing config auto-saved to LocalStorage every 60s.
+      <span class="pointer text-blue" (click)="resetTemplateMacDinh()">Clear and Reset</span>
+    </i>
+  </div>
+
+  <div nz-col nzSpan="24" class="text-center">
+    <button nz-button nzType="primary" nzSize="large" type="button" (click)="onSubmit()">
+      Generate "Template HTML" and "Config JSON (Stringify)"</button>
+    <button [disabled]="!outputEmailTpl" nz-button nzType="text" nzSize="large" type="button"
+      (click)="outputEmailTpl='';outputEmailCfg=''">Clear</button>
+  </div>
+
+  <div nz-col nzSpan="12" class="text-center" *ngIf="outputEmailTpl">
+    <h3>Output Email Template</h3>
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 10}" [(ngModel)]="outputEmailTpl"
+      placeholder="Config (JSON stringified)"></textarea>
+  </div>
+
+  <div nz-col nzSpan="12" class="text-center" *ngIf="outputEmailTpl">
+    <h3>Output Email Config</h3>
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 10}" [(ngModel)]="outputEmailCfg"
+      placeholder="Config (JSON stringified)"></textarea>
+  </div>
+
+
+</div>
