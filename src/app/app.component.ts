@@ -1,6 +1,6 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { EmailEditorComponent } from 'angular-email-editor';
-import { timer } from 'rxjs';
+import { take, timer } from 'rxjs';
 import { SystemConstant } from './system.constant';
 
 @Component({
@@ -12,7 +12,7 @@ export class AppComponent {
 
   @ViewChild(EmailEditorComponent)
   private emailEditor: EmailEditorComponent;
-  emailEditorMinHeight = 600;
+  emailEditorMinHeight = 800;
   blockEmailEditorStyle = {};
   emailEditorStyle = {};
   templateMacDinh = localStorage.getItem('draft-email-cfg') ? JSON.parse(localStorage.getItem('draft-email-cfg')) : SystemConstant.EMAIL_TEMPLATE;
@@ -27,6 +27,7 @@ export class AppComponent {
         localStorage.setItem('draft-email-cfg', JSON.stringify(data));
       });
     });
+    timer(1000, 1000).pipe(take(10)).subscribe(() => this.onResize());
   }
 
   @HostListener('window:resize', ['$event'])
