@@ -5,7 +5,7 @@
 
   <div nz-col nzSpan="24" class="text-center">
     <h3>Load config from JSON (stringified):</h3>
-    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 5}" [(ngModel)]="inputEmailCfg"
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 1, maxRows: 2}" [(ngModel)]="inputEmailCfg"
       placeholder="Config (JSON stringified)"></textarea>
     <button [disabled]="!inputEmailCfg" nz-button nzType="primary" nzSize="large" type="button"
       (click)="loadCustomEmailCfg()">Load config</button>
@@ -23,20 +23,47 @@
 
   <div nz-col nzSpan="24" class="text-center">
     <button nz-button nzType="primary" nzSize="large" type="button" (click)="onSubmit()">
-      Generate "Template HTML" and "Config JSON (Stringify)"</button>
+      Generate</button>
     <button [disabled]="!outputEmailTpl" nz-button nzType="text" nzSize="large" type="button"
       (click)="outputEmailTpl='';outputEmailCfg=''">Clear</button>
   </div>
 
-  <div nz-col nzSpan="12" class="text-center" *ngIf="outputEmailTpl">
+  <div nz-col nzSpan="8" class="text-center" *ngIf="outputEmailTpl">
     <h3>Output Email Template</h3>
-    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 10}" [(ngModel)]="outputEmailTpl"
-      placeholder="Config (JSON stringified)"></textarea>
+    <button class="mr-bot-5" nz-button nzType="primary" nzSearch
+      (click)="downloadTextContent(outputEmailTpl, 'template.html')">
+      Download template.html</button>
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 8}" [(ngModel)]="outputEmailTpl"
+      placeholder="Output Email Template"></textarea>
   </div>
 
-  <div nz-col nzSpan="12" class="text-center" *ngIf="outputEmailTpl">
+  <div nz-col nzSpan="8" class="text-center" *ngIf="outputEmailTpl">
+    <h3>
+      Sending Test email by cURL and <a href="https://myaccount.google.com/apppasswords">Gmail AppPasswords</a>
+    </h3>
+    <nz-input-group nzSearch [nzAddOnAfter]="suffixButton">
+      <input type="text" nz-input placeholder="Enter your email username" [value]="userEmail" #userEmailInp />
+    </nz-input-group>
+    <ng-template #suffixButton>
+      <button nz-button nzType="primary" nzSearch (click)="replaceEmailPlaceholder(userEmailInp.value)">Replace in
+        data.txt</button>
+      <button class="mr-left-5" nz-button nzType="primary" nzSearch
+        (click)="downloadTextContent(outputEmailTplCurl, 'data.txt')">Download
+        data.txt</button>
+    </ng-template>
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 4, maxRows: 4}"
+      placeholder="cURL command line for sending test mail">curl -s -o /dev/null --connect-timeout 15 -v --insecure "smtp://smtp.gmail.com:587" --mail-from "{{userEmail}}@gmail.com" --mail-rcpt "{{userEmail}}@gmail.com" --ssl -T data.txt -u "{{userEmail}}@gmail.com:<app-password>"</textarea>
+    <b>data.txt</b> content:
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 3, maxRows: 3}" [(ngModel)]="outputEmailTplCurl"
+      placeholder="Data for send Test mail by cURL"></textarea>
+  </div>
+
+  <div nz-col nzSpan="8" class="text-center" *ngIf="outputEmailTpl">
     <h3>Output Email Config (Stringify)</h3>
-    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 10}" [(ngModel)]="outputEmailCfg"
+    <button class="mr-bot-5" nz-button nzType="primary" nzSearch
+      (click)="downloadTextContent(outputEmailCfg, 'cfg.json')">
+      Download cfg.json</button>
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 8}" [(ngModel)]="outputEmailCfg"
       placeholder="Config (JSON stringified)"></textarea>
   </div>
 

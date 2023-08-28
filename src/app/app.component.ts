@@ -1,5 +1,6 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { EmailEditorComponent } from 'angular-email-editor';
+import { encode } from 'js-base64';
 import { take, timer } from 'rxjs';
 import { SystemConstant } from './system.constant';
 
@@ -19,12 +20,15 @@ export class AppComponent {
 
   inputEmailCfg = '';
   outputEmailTpl = '';
+  outputEmailTplCurl = '';
   outputEmailCfg = '';
+  userEmail = localStorage.getItem('draft-email-user') ?? '<mailUsername>';
 
   constructor() {
     timer(60000, 60000).subscribe(() => {
       this.emailEditor.editor.saveDesign((data) => {
         localStorage.setItem('draft-email-cfg', JSON.stringify(data));
+        localStorage.setItem('draft-email-user', this.userEmail);
       });
     });
     timer(1000, 1000).pipe(take(10)).subscribe(() => this.onResize());
@@ -51,6 +55,11 @@ export class AppComponent {
       this.outputEmailCfg = JSON.stringify(data);
       this.emailEditor.editor.exportHtml((data2) => {
         this.outputEmailTpl = data2.html;
+        this.outputEmailTplCurl = `From: ${this.userEmail}@gmail.com\nTo: ${this.userEmail}@gmail.com\n` +
+          'Subject: SendTestMail\n' +
+          'MIME-Version: 1.0\nContent-Type: multipart/mixed; boundary=\"MULTIPART-ALTERNATIVE-BOUNDARY\"\n\n' +
+          '--MULTIPART-ALTERNATIVE-BOUNDARY\nContent-Type: text/html; charset=utf-8\n' + 'Content-Transfer-Encoding: base64\nContent-Disposition: inline\n\n' + encode(data2.html) +
+          '\n--MULTIPART-ALTERNATIVE-BOUNDARY--';
       });
     });
   }
@@ -67,6 +76,23 @@ export class AppComponent {
     localStorage.removeItem('draft-email-cfg');
     this.templateMacDinh = SystemConstant.EMAIL_TEMPLATE;
     this.editorLoaded();
+  }
+
+  replaceEmailPlaceholder(newEmail: string) {
+    this.outputEmailTplCurl = this.outputEmailTplCurl.replace(new RegExp(this.userEmail, 'g'), newEmail);
+    this.userEmail = newEmail;
+  }
+
+  downloadTextContent(content: string, filename: string) {
+    const url = window.URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.setAttribute('style', 'display: none');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
   }
 
 }

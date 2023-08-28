@@ -17,3 +17,11 @@ div[nz-col] {
 .text-blue {
   color: #1890ff;
 }
+
+.mr-left-5 {
+  margin-left: 5px;
+}
+
+.mr-bot-5 {
+  margin-bottom: 5px;
+}
