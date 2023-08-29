@@ -2,6 +2,7 @@ import { Component, HostListener, ViewChild } from '@angular/core';
 import { EmailEditorComponent } from 'angular-email-editor';
 import { encode } from 'js-base64';
 import { take, timer } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { SystemConstant } from './system.constant';
 
 @Component({
@@ -16,30 +17,22 @@ export class AppComponent {
   emailEditorMinHeight = 800;
   blockEmailEditorStyle = {};
   emailEditorStyle = {};
-  templateMacDinh = localStorage.getItem('draft-email-cfg') ? JSON.parse(localStorage.getItem('draft-email-cfg')) : SystemConstant.EMAIL_TEMPLATE;
+  projectId = environment.unlayerProjectId;
+
+  templateMacDinh = localStorage.getItem('draft-email-cfg') ? JSON.parse(localStorage.getItem('draft-email-cfg'))?.cfg : SystemConstant.EMAIL_TEMPLATE.cfg;
+  inputEmailCustomCss = localStorage.getItem('draft-email-cfg') ? JSON.parse(localStorage.getItem('draft-email-cfg'))?.ccss : '';
 
   inputEmailCfg = '';
+
   outputEmailTpl = '';
   outputEmailTplCurl = '';
   outputEmailCfg = '';
   userEmail = localStorage.getItem('draft-email-user') ?? '<mailUsername>';
-  tools = {
-    button: { enabled: true },
-    divider: { enabled: true },
-    form: { enabled: true },
-    heading: { enabled: true },
-    image: { enabled: true },
-    menu: { enabled: true },
-    text: { enabled: true },
-    timer: { enabled: true },
-    video: { enabled: true },
-    html: { enabled: true },
-  };
 
   constructor() {
     timer(60000, 60000).subscribe(() => {
       this.emailEditor.editor.saveDesign((data) => {
-        localStorage.setItem('draft-email-cfg', JSON.stringify(data));
+        localStorage.setItem('draft-email-cfg', JSON.stringify({ cfg: data, ccss: this.inputEmailCustomCss }));
         localStorage.setItem('draft-email-user', this.userEmail);
       });
     });
@@ -64,13 +57,16 @@ export class AppComponent {
   onSubmit(): void {
     // this.spinner.show();
     this.emailEditor.editor.saveDesign((data) => {
-      this.outputEmailCfg = JSON.stringify(data);
+      this.outputEmailCfg = JSON.stringify({ cfg: data, ccss: this.inputEmailCustomCss });
       this.emailEditor.editor.exportHtml((data2) => {
-        this.outputEmailTpl = data2.html;
+        const listCodeHtmlStyle = (data2.html as string).split('</style>');
+        listCodeHtmlStyle[0] += `\n${this.inputEmailCustomCss}\n`;
+        this.outputEmailTpl = listCodeHtmlStyle.join('</style>');
+        // this.outputEmailTpl = data2.html;
         this.outputEmailTplCurl = `From: ${this.userEmail}@gmail.com\nTo: ${this.userEmail}@gmail.com\n` +
           'Subject: SendTestMail\n' +
           'MIME-Version: 1.0\nContent-Type: multipart/mixed; boundary=\"MULTIPART-ALTERNATIVE-BOUNDARY\"\n\n' +
-          '--MULTIPART-ALTERNATIVE-BOUNDARY\nContent-Type: text/html; charset=utf-8\n' + 'Content-Transfer-Encoding: base64\nContent-Disposition: inline\n\n' + encode(data2.html) +
+          '--MULTIPART-ALTERNATIVE-BOUNDARY\nContent-Type: text/html; charset=utf-8\n' + 'Content-Transfer-Encoding: base64\nContent-Disposition: inline\n\n' + encode(this.outputEmailTpl) +
           '\n--MULTIPART-ALTERNATIVE-BOUNDARY--';
       });
     });
@@ -81,12 +77,15 @@ export class AppComponent {
   }
 
   loadCustomEmailCfg() {
-    this.emailEditor.loadDesign(JSON.parse(this.inputEmailCfg));
+    const parsedCfg = JSON.parse(this.inputEmailCfg);
+    this.emailEditor.loadDesign(parsedCfg?.cfg);
+    this.inputEmailCustomCss = parsedCfg?.ccss ?? '';
   }
 
   resetTemplateMacDinh() {
     localStorage.removeItem('draft-email-cfg');
-    this.templateMacDinh = SystemConstant.EMAIL_TEMPLATE;
+    this.templateMacDinh = SystemConstant.EMAIL_TEMPLATE?.cfg;
+    this.inputEmailCustomCss = '';
     this.editorLoaded();
   }
 

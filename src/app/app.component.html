@@ -15,8 +15,10 @@
 
   <div nz-col nzSpan="24" id="block-email-editor" class="text-center" [ngStyle]="blockEmailEditorStyle">
     <!-- Email template editor -->
-    <email-editor [editorId]="'email-editor'" (loaded)="editorLoaded()" [ngStyle]="emailEditorStyle" [tools]="tools"
-      [projectId]="167"></email-editor>
+    <email-editor [editorId]="'email-editor'" (loaded)="editorLoaded()" [ngStyle]="emailEditorStyle"
+      [projectId]="projectId"></email-editor>
+    <textarea nz-input class="w-100" [nzAutosize]="{minRows: 2, maxRows: 5}" [(ngModel)]="inputEmailCustomCss"
+      placeholder="Custom CSS (Send test mail to preview)"></textarea>
     <i>Editing config auto-saved to LocalStorage every 60s.
       <span class="pointer text-blue" (click)="resetTemplateMacDinh()">Clear and Reset</span>
     </i>
