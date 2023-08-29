@@ -15,7 +15,8 @@
 
   <div nz-col nzSpan="24" id="block-email-editor" class="text-center" [ngStyle]="blockEmailEditorStyle">
     <!-- Email template editor -->
-    <email-editor [editorId]="'email-editor'" (loaded)="editorLoaded()" [ngStyle]="emailEditorStyle"></email-editor>
+    <email-editor [editorId]="'email-editor'" (loaded)="editorLoaded()" [ngStyle]="emailEditorStyle" [tools]="tools"
+      [projectId]="167"></email-editor>
     <i>Editing config auto-saved to LocalStorage every 60s.
       <span class="pointer text-blue" (click)="resetTemplateMacDinh()">Clear and Reset</span>
     </i>

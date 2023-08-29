@@ -23,6 +23,18 @@ export class AppComponent {
   outputEmailTplCurl = '';
   outputEmailCfg = '';
   userEmail = localStorage.getItem('draft-email-user') ?? '<mailUsername>';
+  tools = {
+    button: { enabled: true },
+    divider: { enabled: true },
+    form: { enabled: true },
+    heading: { enabled: true },
+    image: { enabled: true },
+    menu: { enabled: true },
+    text: { enabled: true },
+    timer: { enabled: true },
+    video: { enabled: true },
+    html: { enabled: true },
+  };
 
   constructor() {
     timer(60000, 60000).subscribe(() => {
